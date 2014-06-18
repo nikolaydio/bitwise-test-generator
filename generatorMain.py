@@ -20,7 +20,7 @@ def main():
 		print("Not enough arguments.")
 		print_help()
 		exit(-1)
-	test_count = 16
+	test_count = 29
 	output_dir = "/var/www/html/tp"
 	for i in range(test_count):
 		filename = output_dir + "/test" + str(i+1) + ".html"

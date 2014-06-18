@@ -81,8 +81,16 @@ class XorQuestion(Entry):
 		s += "\nint b = orig | (insert << " + str(self.shiftb) + ")"
 		s += "\nint XOR = a ^ b"
 		return s
-
-
+class LeftShiftQuestion(Entry):
+	def __init__(self, diff):
+		self.orig = new_hex(16, diff)
+		self.shift = new_hex(4, diff)
+		self.answer = self.orig | (1 << self.shift)
+	def format(self):
+		s = ""
+		s += "int orig = " + hex(self.orig)
+		s += "\nint left = orig | (1 << " + str(self.shift) + ")"
+		return s
 
 class Test():
 	def __init__(self, diff):
@@ -100,13 +108,17 @@ class Test():
 def compose_test(diff):
 	test = Test(diff)
 
-	for i in range(2):
+	m = 1
+	for i in range(2 * m):
 		test.add(OrQuestion(diff))
-	for i in range(2):
+	for i in range(2 * m):
 		test.add(AndQuestion(diff))
 
-	for i in range(1):
+	for i in range(1 * m):
 		test.add(XorQuestion(diff))
+
+	for i in range(1 * m):
+		test.add(LeftShiftQuestion(diff))
 	return test
 	#entries.append(new_and_question())
 	#entries.append(new_and_question())
