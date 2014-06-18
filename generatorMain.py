@@ -20,15 +20,16 @@ def main():
 		print("Not enough arguments.")
 		print_help()
 		exit(-1)
-	test_count = 1
-	output_dir = "./tests"
+	test_count = 16
+	output_dir = "/var/www/html/tp"
 	for i in range(test_count):
+		filename = output_dir + "/test" + str(i+1) + ".html"
 		test = creator.compose_test(5)
 		#output the test
-		temp = Template(filename='template.html')
-		out = temp.render_unicode(entries=test.entries)
+		temp = Template(filename='templates/webtemplate.html')
+		out = temp.render_unicode(entries=test.entries,variant=i+1)
 
-		text_f = open("out.html", "w")
+		text_f = open(filename, "w")
 		text_f.write(out.encode('utf_16'))
 		text_f.close()
 	

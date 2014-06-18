@@ -23,12 +23,9 @@ def new_hex(bits, diff):
 
 class Entry():
 	def __init__(self):
-		self.input = []
 		self.answer = []
 	def __str__(self):
-		s = "Input: "
-		for i in self.input:
-			s += str(i) + "  "
+		s = "Entry -> "
 		s += "\nAnswer: " + str(self.answer)
 		return s
 
@@ -38,7 +35,6 @@ class OrQuestion(Entry):
 		self.mask = new_hex(4, diff)
 		self.shift = new_hex(4, diff)
 
-		self.input = (self.orig, self.mask, self.shift)
 		self.answer = (self.orig | (self.mask << self.shift))
 	def format(self):
 		s = ""
@@ -46,6 +42,46 @@ class OrQuestion(Entry):
 		s += "\nint insert = " + hex(self.mask)
 		s += "\nint a = orig | (insert << " + str(self.shift) + ")"
 		return s
+class AndQuestion(Entry):
+	def __init__(self, diff):
+		self.orig = new_hex(16, diff)
+		self.mask = new_hex(4, diff)
+		self.shifta = new_hex(4, diff)
+		self.shiftb = new_hex(4, diff)
+
+		a = self.orig | (self.mask << self.shifta)
+		b = self.orig | (self.mask << self.shiftb)
+		self.answer = a & b
+
+	def format(self):
+		s = ""
+		s += "int orig = " + hex(self.orig)
+		s += "\nint insert = " + hex(self.mask)
+		s += "\nint a = orig | (insert << " + str(self.shifta) + ")"
+		s += "\nint b = orig | (insert << " + str(self.shiftb) + ")"
+		s += "\nint AND = a & b"
+		return s
+
+class XorQuestion(Entry):
+	def __init__(self, diff):
+		self.orig = new_hex(16, diff)
+		self.mask = new_hex(4, diff)
+		self.shifta = new_hex(4, diff)
+		self.shiftb = new_hex(4, diff)
+
+		a = self.orig | (self.mask << self.shifta)
+		b = self.orig | (self.mask << self.shiftb)
+		self.answer = a ^ b
+
+	def format(self):
+		s = ""
+		s += "int orig = " + hex(self.orig)
+		s += "\nint insert = " + hex(self.mask)
+		s += "\nint a = orig | (insert << " + str(self.shifta) + ")"
+		s += "\nint b = orig | (insert << " + str(self.shiftb) + ")"
+		s += "\nint XOR = a ^ b"
+		return s
+
 
 
 class Test():
@@ -64,9 +100,13 @@ class Test():
 def compose_test(diff):
 	test = Test(diff)
 
-	test.add(OrQuestion(diff))
-	test.add(OrQuestion(diff))
+	for i in range(2):
+		test.add(OrQuestion(diff))
+	for i in range(2):
+		test.add(AndQuestion(diff))
 
+	for i in range(1):
+		test.add(XorQuestion(diff))
 	return test
 	#entries.append(new_and_question())
 	#entries.append(new_and_question())
