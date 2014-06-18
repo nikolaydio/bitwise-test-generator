@@ -34,12 +34,18 @@ class Entry():
 
 class OrQuestion(Entry):
 	def __init__(self, diff):
-		orig = new_hex(16, diff)
-		mask = new_hex(4, diff)
-		shift = new_hex(4, diff)
+		self.orig = new_hex(16, diff)
+		self.mask = new_hex(4, diff)
+		self.shift = new_hex(4, diff)
 
-		self.input = (orig, mask, shift)
-		self.answer = (orig | (mask << shift))
+		self.input = (self.orig, self.mask, self.shift)
+		self.answer = (self.orig | (self.mask << self.shift))
+	def format(self):
+		s = ""
+		s += "int orig = " + hex(self.orig)
+		s += "\nint insert = " + hex(self.mask)
+		s += "\nint a = orig | (insert << " + str(self.shift) + ")"
+		return s
 
 
 class Test():

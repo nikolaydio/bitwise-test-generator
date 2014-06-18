@@ -1,5 +1,6 @@
 import sys
 import creator
+from mako.template import Template
 
 def print_help():
 	_help = """python3 test-generator.py <number of tests> <difficuly> <optional parameters>
@@ -22,7 +23,14 @@ def main():
 	test_count = 1
 	output_dir = "./tests"
 	for i in range(test_count):
-		print(creator.compose_test(5))
+		test = creator.compose_test(5)
+		#output the test
+		temp = Template(filename='template.html')
+		out = temp.render_unicode(entries=test.entries)
+
+		text_f = open("out.html", "w")
+		text_f.write(out.encode('utf_16'))
+		text_f.close()
 	
 
 
