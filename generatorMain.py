@@ -22,6 +22,7 @@ def main():
 		exit(-1)
 	test_count = 29
 	output_dir = "/var/www/html/tp"
+	test_list = []
 	for i in range(test_count):
 		filename = output_dir + "/test" + str(i+1) + ".html"
 		test = creator.compose_test(5)
@@ -32,6 +33,16 @@ def main():
 		text_f = open(filename, "w")
 		text_f.write(out.encode('utf_16'))
 		text_f.close()
+
+		test.number = i + 1
+		test_list.append(test)
+
+	filename = output_dir + "/testAnswers.html"
+	temp = Template(filename='templates/answerSheet.html')
+	out = temp.render_unicode(variants=test_list)
+	text_f = open(filename, "w")
+	text_f.write(out.encode('utf_16'))
+	text_f.close()
 	
 
 
