@@ -1,6 +1,10 @@
 import sys
 import creator
 from mako.template import Template
+from xhtml2pdf import pisa             # import python module
+import shutil
+
+import StringIO
 
 def print_help():
 	_help = """python3 test-generator.py <number of tests> <difficuly> <optional parameters>
@@ -15,6 +19,33 @@ Optional paramters ->
 	-genhtml \t SHould we generate htmls? (Yes by default)
 	"""
 	print(_help)
+
+def writePDF(html, fn, folder):
+	fn += ".pdf"
+
+	out_f = open("chunk.pdf", "w")
+	pisa.showLogging()
+	pisaStatus = pisa.CreatePDF(src=html, dest=out_f)
+
+	out_f.close()
+	shutil.move("chunk.pdf", fn)
+
+	return pisaStatus.err
+
+def generateHTML(test):
+	temp = Template(filename='templates/webtemplate.html')
+	out = temp.render_unicode(entries=test.entries,variant=test.number)
+
+	return out
+
+def writeHTML(html, fn):
+	fn += ".html"
+
+	text_f = open(fn, "w")
+	text_f.write(html.encode('utf_16'))
+	text_f.close()
+
+
 def main():
 	if len(sys.argv) < 3:
 		print("Not enough arguments.")
@@ -24,17 +55,14 @@ def main():
 	output_dir = "/var/www/html/tp"
 	test_list = []
 	for i in range(test_count):
-		filename = output_dir + "/test" + str(i+1) + ".html"
 		test = creator.compose_test(5)
-		#output the test
-		temp = Template(filename='templates/webtemplate.html')
-		out = temp.render_unicode(entries=test.entries,variant=i+1)
-
-		text_f = open(filename, "w")
-		text_f.write(out.encode('utf_16'))
-		text_f.close()
-
 		test.number = i + 1
+		filename = output_dir + "/test" + str(i+1)
+
+		html = generateHTML(test)
+		writeHTML(html, filename)
+		writePDF(html, filename, "./")
+
 		test_list.append(test)
 
 	filename = output_dir + "/testAnswers.html"
