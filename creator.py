@@ -1,25 +1,18 @@
 import random
 
-sym = {}
-sym[0] = 1
-sym[1] = 2
-sym[2] = 2
-sym[3] = 3
-sym[4] = 2
-sym[5] = 4
-sym[6] = 3
-sym[7] = 3
-sym[8] = 2
-sym[9] = 4
-sym[10] = 4
-sym[11] = 5
-sym[12] = 5
-sym[13] = 5
-sym[14] = 3
-sym[15] = 1
+easy = [0, 15, 10, 13]
+med = [1, 2, 3, 4, 5 ,6 ,7, 8 ,9, 11, 12, 14]
 
 def new_hex(bits, diff):
-	return random.randrange(0, 2 ** bits)
+	acc = 0
+	for i in range(0, bits / 4):
+		acc <<= 4
+		r = random.randrange(1, 100)
+		if r <= diff:
+			acc |= med[random.randrange(0, len(med))]
+		else:
+			acc |= easy[random.randrange(0, len(easy))]
+	return acc
 
 class Entry():
 	def __init__(self):

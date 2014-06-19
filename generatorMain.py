@@ -51,11 +51,11 @@ def main():
 		print("Not enough arguments.")
 		print_help()
 		exit(-1)
-	test_count = 29
+	test_count = 1
 	output_dir = "/var/www/html/tp"
 	test_list = []
 	for i in range(test_count):
-		test = creator.compose_test(5)
+		test = creator.compose_test(100)
 		test.number = i + 1
 		filename = output_dir + "/test" + str(i+1)
 
