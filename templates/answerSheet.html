@@ -1,6 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+<style>
+	@font-face {
+		font-family: DEFAULT_FONT;
+		src: url("font/micross.ttf")
+	}
+	*{ font-family: DEFAULT_FONT; }
+</style>
 </head>
 <body>
 <div id="page">
@@ -11,20 +18,22 @@
 		<h2>Отговори</h2>
 	</div>
 	<div class="variants">
-		% for variant in variants:
-		<div class="variant">
-			<div class = "number">
-				${ variant.number }
-			</div>
-			% for i in variant.entries:
-			<div class = "entry">
-				<div class = "text">
-					${ hex(i.answer) }
-				</div>
-			</div>
+		<table border=1>
+			<tr><th>N</th>
+			% for num in range(len(variants[0].entries)):
+				<th>${num+1}</th>
 			% endfor
-		</div><br />
-		% endfor
+			% for variant in variants:
+				<tr>
+					<td>${ variant.number }</td>
+					% for i in variant.entries:
+					<td>
+						${ hex(i.answer) }
+					</td>
+					% endfor
+				</tr>
+			% endfor
+		</table>
 	</div>
 
 </div>
