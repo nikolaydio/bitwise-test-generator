@@ -1,6 +1,6 @@
 build:
 	@mkdir -p build
-	rm build -r
+	@rm build -r
 	cxfreeze --target-dir=build -c -s test-generator.py
 	@mkdir -p build
 	@mkdir -p build/font
@@ -11,5 +11,7 @@ build:
 	cp templates build/ -r
 	cp style build/ -r
 	
+	zip -r build.zip build/*
+
 web:
 	python test-generator.py -c 10 -d 25 -gp false -o /var/www/html/tp/
