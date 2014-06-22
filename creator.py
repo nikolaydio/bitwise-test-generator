@@ -1,10 +1,10 @@
 import random
 
-easy = [0, 15, 10, 13]
-med = [1, 2, 3, 4, 5 ,6 ,7, 8 ,9, 11, 12, 14]
 
 def new_hex(bits, diff):
 	acc = 0
+	easy = [0, 15, 10, 13, 7]
+	med = [1, 2, 3, 4, 5 ,6, 8 ,9, 11, 12, 14]
 	for i in range(0, bits / 4):
 		acc <<= 4
 		r = random.randrange(1, 100)
@@ -13,6 +13,10 @@ def new_hex(bits, diff):
 		else:
 			acc |= easy[random.randrange(0, len(easy))]
 	return number(bits, acc)
+def new_mask(bits, diff):
+	return new_hex(bits, diff)
+def new_shift(bits, diff):
+	return random.randrange(0, diff) / bits + 1
 
 class number():
 	def __init__(self, bits, num):
@@ -57,22 +61,22 @@ class Entry():
 class OrQuestion(Entry):
 	def __init__(self, diff):
 		self.orig = new_hex(16, diff)
-		self.mask = new_hex(4, diff)
-		self.shift = new_hex(4, diff)
+		self.mask = new_mask(4, diff)
+		self.shift = new_shift(4, diff)
 
 		self.answer = (self.orig | (self.mask << self.shift))
 	def format(self):
 		s = ""
-		s += "int orig = " + hex(self.orig)
-		s += "\nint insert = " + hex(self.mask)
-		s += "\nint a = orig | (insert << " + str(self.shift) + ")"
+		s += "int16_t orig = " + hex(self.orig)
+		s += "\nint16_t insert = " + hex(self.mask)
+		s += "\nint16_t a = orig | (insert << " + str(self.shift) + ")"
 		return s
 class AndQuestion(Entry):
 	def __init__(self, diff):
 		self.orig = new_hex(16, diff)
-		self.mask = new_hex(4, diff)
-		self.shifta = new_hex(4, diff)
-		self.shiftb = new_hex(4, diff)
+		self.mask = new_mask(4, diff)
+		self.shifta = new_shift(4, diff)
+		self.shiftb = new_shift(4, diff)
 
 		a = self.orig | (self.mask << self.shifta)
 		b = self.orig | (self.mask << self.shiftb)
@@ -80,19 +84,19 @@ class AndQuestion(Entry):
 
 	def format(self):
 		s = ""
-		s += "int orig = " + hex(self.orig)
-		s += "\nint insert = " + hex(self.mask)
-		s += "\nint a = orig | (insert << " + str(self.shifta) + ")"
-		s += "\nint b = orig | (insert << " + str(self.shiftb) + ")"
-		s += "\nint AND = a & b"
+		s += "int16_t orig = " + hex(self.orig)
+		s += "\nint16_t insert = " + hex(self.mask)
+		s += "\nint16_t a = orig | (insert << " + str(self.shifta) + ")"
+		s += "\nint16_t b = orig | (insert << " + str(self.shiftb) + ")"
+		s += "\nint16_t AND = a & b"
 		return s
 
 class XorQuestion(Entry):
 	def __init__(self, diff):
 		self.orig = new_hex(16, diff)
-		self.mask = new_hex(4, diff)
-		self.shifta = new_hex(4, diff)
-		self.shiftb = new_hex(4, diff)
+		self.mask = new_mask(4, diff)
+		self.shifta = new_shift(4, diff)
+		self.shiftb = new_shift(4, diff)
 
 		a = self.orig | (self.mask << self.shifta)
 		b = self.orig | (self.mask << self.shiftb)
@@ -100,94 +104,94 @@ class XorQuestion(Entry):
 
 	def format(self):
 		s = ""
-		s += "int orig = " + hex(self.orig)
-		s += "\nint insert = " + hex(self.mask)
-		s += "\nint a = orig | (insert << " + str(self.shifta) + ")"
-		s += "\nint b = orig | (insert << " + str(self.shiftb) + ")"
-		s += "\nint XOR = a ^ b"
+		s += "int16_t orig = " + hex(self.orig)
+		s += "\nint16_t insert = " + hex(self.mask)
+		s += "\nint16_t a = orig | (insert << " + str(self.shifta) + ")"
+		s += "\nint16_t b = orig | (insert << " + str(self.shiftb) + ")"
+		s += "\nint16_t XOR = a ^ b"
 		return s
 
 class LeftShiftQuestion(Entry):
 	def __init__(self, diff):
 		self.orig = new_hex(16, diff)
-		self.shift = new_hex(4, diff)
+		self.shift = new_shift(4, diff)
 		self.answer = self.orig | (1 << int(self.shift))
 	def format(self):
 		s = ""
-		s += "int orig = " + hex(self.orig)
-		s += "\nint left = orig | (1 << " + str(self.shift) + ")"
+		s += "int16_t orig = " + hex(self.orig)
+		s += "\nint16_t left = orig | (1 << " + str(self.shift) + ")"
 		return s
 
 class LongXorQuestion(Entry):
 	def __init__(self, diff):
 		self.value1 = new_hex(32, diff)
 		self.value2 = new_hex(32, diff)
-		self.shift1 = new_hex(4, diff)
-		self.shift2 = new_hex(4, diff)
+		self.shift1 = new_shift(4, diff)
+		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint value1 = " + hex(self.value1)
-		s += "\nint value2 = " + hex(self.value2)
-		s += "\nint result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
+		s += "\nint32_t value1 = " + hex(self.value1)
+		s += "\nint32_t value2 = " + hex(self.value2)
+		s += "\nint32_t result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
 		return s
 class XorDecQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(10, diff)
-		self.value2 = new_hex(10, diff)
-		self.shift1 = new_hex(4, diff)
-		self.shift2 = new_hex(4, diff)
+		self.value1 = new_hex(16, diff)
+		self.value2 = new_hex(16, diff)
+		self.shift1 = new_shift(4, diff)
+		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint value1 = " + str(self.value1)
-		s += "\nint value2 = " + str(self.value2)
-		s += "\nint result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
+		s += "\nint16_t value1 = " + str(self.value1)
+		s += "\nint16_t value2 = " + str(self.value2)
+		s += "\nint16_t result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
 		return s
 
 class IfShiftQuestion(Entry):
 	def __init__(self, diff):
 		self.value1 = new_hex(32, diff)
-		self.shift1 = new_hex(4, diff)
+		self.shift1 = new_shift(4, diff)
 
 		if (self.value1 & ( 1 << int(self.shift1) )) != 0:
 			self.answer = 1
 		else:
 			self.answer = 2
 	def format(self):
-		s = "int testValue = " + hex(self.value1)
-		s += "\nint a = 0;\n if(testValue & (1 << " + str(self.shift1) + "))"
+		s = "int32_t testValue = " + hex(self.value1)
+		s += "\nint32_t a = 0;\n if(testValue & (1 << " + str(self.shift1) + "))"
 		s += "\na = 1; \nelse\n a = 2;"
 		return s
 
 class IfShiftBitQuestion(Entry):
 	def __init__(self, diff):
 		self.value1 = new_hex(32, diff)
-		self.shift1 = new_hex(4, diff)
+		self.shift1 = new_shift(4, diff)
 
 		if (self.value1 & self.value1 ^ self.value1 | ( 1 << int(self.shift1) )) != 0:
 			self.answer = 1
 		else:
 			self.answer = 2
 	def format(self):
-		s = "int testValue = " + hex(self.value1)
-		s += "\nint a = 0;"
+		s = "int32_t testValue = " + hex(self.value1)
+		s += "\nint32_t a = 0;"
 		s += "\n if(testValue & testValue & testValue | (1 << " + str(self.shift1) + "))"
 		s += "\na = 1; \nelse\n a = 2;"
 		return s
 
 class OrDecQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(10, diff)
-		self.value2 = new_hex(10, diff)
-		self.shift1 = new_hex(4, diff)
-		self.shift2 = new_hex(4, diff)
+		self.value1 = new_hex(16, diff)
+		self.value2 = new_hex(16, diff)
+		self.shift1 = new_shift(4, diff)
+		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) | (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint value1 = " + str(self.value1)
-		s += "\nint value2 = " + str(self.value2)
-		s += "\nint result = (value1 << " + str(self.shift1) + ") | (value2 >> " + str(self.shift2) + ")"
+		s += "\nint16_t value1 = " + str(self.value1)
+		s += "\nint16_t value2 = " + str(self.value2)
+		s += "\nint16_t result = (value1 << " + str(self.shift1) + ") | (value2 >> " + str(self.shift2) + ")"
 		return s
 class Test():
 	def __init__(self, diff):
