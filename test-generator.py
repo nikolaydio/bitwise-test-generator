@@ -20,8 +20,8 @@ def writePDF(html, fn, folder):
 
 	return pisaStatus.err
 
-def generateHTML(test):
-	temp = Template(filename='templates/webtemplate.html')
+def generateHTML(test, template):
+	temp = Template(filename=template)
 	out = temp.render_unicode(entries=test.entries,variant=test.number)
 
 	return out
@@ -62,6 +62,8 @@ def main():
 		type=boolean_value, default=True)
 	parser.add_argument('-p','--prefix', help="Test filename prefix",
 		default="test")
+	parser.add_argument('-t','--template', help="Text template to use",
+		default="templates/default.html")
 	args = parser.parse_args()
 
 	try:
@@ -75,7 +77,7 @@ def main():
 		test.number = i + 1
 		filename = args.output_dir + "/" + args.prefix + str(i+1)
 
-		html = generateHTML(test)
+		html = generateHTML(test, args.template)
 		writeHTML(html, filename)
 		if args.gen_pdf:
 			writePDF(html, filename, "./")

@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link href="bootstrap.min.css" rel="stylesheet" >
+
+<link href="jumbotron-narrow.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container">
+  <div class="header"></div>
+      <div class="jumbotron">
+		<h2>Технологично училище Електронни системи</h1>
+		<h3>Технология на програмирането<br />
+		Тест побитови операции</h2>
+		<h3>Вариант ${ variant }</h2>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-6">
+			% for i in range(0, len(entries), 2):
+			<div class = "entry">
+				<h4>Въпрос: ${ i+1 }</h4>
+				<div class = "text">
+					${ entries[i].format().replace("\n", "<br />") }
+				</div>
+			</div>
+			% endfor
+        </div>
+
+        <div class="col-lg-6">
+ 			% for i in range(1, len(entries), 2):
+			<div class = "entry">
+				<h4>Въпрос: ${ i+1 }</h4>
+				<div class = "text">
+					${ entries[i].format().replace("\n", "<br />") }
+				</div>
+			</div>
+			% endfor
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>&copy; elsys-bg.org 2014</p>
+      </div>
+
+    </div> <!-- /container -->
+</body>
+</html>
