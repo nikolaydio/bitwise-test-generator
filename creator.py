@@ -12,7 +12,39 @@ def new_hex(bits, diff):
 			acc |= med[random.randrange(0, len(med))]
 		else:
 			acc |= easy[random.randrange(0, len(easy))]
-	return acc
+	return number(bits, acc)
+
+class number():
+	def __init__(self, bits, num):
+		self.bits = bits
+		full_bits = self.get_full_bits(self.bits)
+		self.num = num & full_bits
+	def __lshift__(self, sec):
+		return self.verify(self.num << int(sec))
+	def __rshift__(self, sec):
+		return self.verify(self.num >> int(sec))
+	def __xor__(self, sec):
+		return self.verify(self.num ^ int(sec))
+	def __or__(self, sec):
+		return self.verify(self.num | int(sec))
+	def __and__(self, sec):
+		return self.verify(self.num & int(sec))
+	def verify(self, num):
+		full_bits = self.get_full_bits(self.bits)
+		return number(self.bits, num & full_bits)
+	def __str__(self):
+		return str(self.num)
+	def __int__(self):
+		return self.num
+	def __hex__(self):
+		return hex(self.num)
+	def get_full_bits(self, bits):
+		if bits == 16:
+			return 2 ** 16 - 1
+		elif bits == 32:
+			return 2 ** 32 - 1
+		else:
+			return (2 ** bits) - 1
 
 class Entry():
 	def __init__(self):
@@ -79,7 +111,7 @@ class LeftShiftQuestion(Entry):
 	def __init__(self, diff):
 		self.orig = new_hex(16, diff)
 		self.shift = new_hex(4, diff)
-		self.answer = self.orig | (1 << self.shift)
+		self.answer = self.orig | (1 << int(self.shift))
 	def format(self):
 		s = ""
 		s += "int orig = " + hex(self.orig)
@@ -118,7 +150,7 @@ class IfShiftQuestion(Entry):
 		self.value1 = new_hex(32, diff)
 		self.shift1 = new_hex(4, diff)
 
-		if (self.value1 & ( 1 << self.shift1 )) != 0:
+		if (self.value1 & ( 1 << int(self.shift1) )) != 0:
 			self.answer = 1
 		else:
 			self.answer = 2
@@ -133,7 +165,7 @@ class IfShiftBitQuestion(Entry):
 		self.value1 = new_hex(32, diff)
 		self.shift1 = new_hex(4, diff)
 
-		if (self.value1 & self.value1 ^ self.value1 | ( 1 << self.shift1 )) != 0:
+		if (self.value1 & self.value1 ^ self.value1 | ( 1 << int(self.shift1) )) != 0:
 			self.answer = 1
 		else:
 			self.answer = 2
