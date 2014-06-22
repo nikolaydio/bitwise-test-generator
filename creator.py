@@ -131,7 +131,7 @@ class LongXorQuestion(Entry):
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint32_t value1 = " + hex(self.value1)
+		s += "int32_t value1 = " + hex(self.value1)
 		s += "\nint32_t value2 = " + hex(self.value2)
 		s += "\nint32_t result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
 		return s
@@ -144,7 +144,7 @@ class XorDecQuestion(Entry):
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint16_t value1 = " + str(self.value1)
+		s += "int16_t value1 = " + str(self.value1)
 		s += "\nint16_t value2 = " + str(self.value2)
 		s += "\nint16_t result = (value1 << " + str(self.shift1) + ") ^ (value2 >> " + str(self.shift2) + ")"
 		return s
@@ -189,7 +189,7 @@ class OrDecQuestion(Entry):
 		self.answer = (self.value1 << self.shift1) | (self.value2 >> self.shift2)
 	def format(self):
 		s = ""
-		s += "\nint16_t value1 = " + str(self.value1)
+		s += "int16_t value1 = " + str(self.value1)
 		s += "\nint16_t value2 = " + str(self.value2)
 		s += "\nint16_t result = (value1 << " + str(self.shift1) + ") | (value2 >> " + str(self.shift2) + ")"
 		return s
