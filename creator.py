@@ -16,7 +16,7 @@ def new_hex(bits, diff):
 def new_mask(bits, diff):
 	return new_hex(bits, diff)
 def new_shift(bits, diff):
-	return random.randrange(0, diff) / bits + 1
+	return (2 ** bits) * random.randrange(0, diff) / 100 + 1
 
 class number():
 	def __init__(self, bits, num):
