@@ -13,3 +13,6 @@
  * Run "make build"
 
 #### Tested and working with python 2.7
+
+
+#### Linux 64bit binaries available from the downloads page [here](https://bitbucket.org/nikolaydio/test-generator/downloads).
