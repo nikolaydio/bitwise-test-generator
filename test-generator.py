@@ -13,12 +13,15 @@ def writePDF(html, fn, folder):
 
 	out_f = open("chunk.pdf", "w")
 	pisa.showLogging()
-	pisaStatus = pisa.CreatePDF(src=html, dest=out_f)
+	try:
+		pisaStatus = pisa.CreatePDF(src=html, dest=out_f)
 
-	out_f.close()
-	shutil.move("chunk.pdf", fn)
+		shutil.move("chunk.pdf", fn)
+	except:
+		print("Failed to produce " + fn)
+	finally:
+		out_f.close()
 
-	return pisaStatus.err
 
 def generateHTML(test, template):
 	temp = Template(filename=template)

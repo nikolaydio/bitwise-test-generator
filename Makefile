@@ -14,4 +14,4 @@ build:
 	zip -r build.zip build/*
 
 web:
-	python test-generator.py -c 10 -d 25 -gp false -o /var/www/html/tp/
+	python test-generator.py -c 10 -d 45 -gp false -o /var/www/html/tp/ -t templates/bootstrap.html
