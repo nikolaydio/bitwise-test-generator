@@ -59,7 +59,7 @@ def main():
 	parser.add_argument('-o','--output_dir', help=
 		"Output directory", default="./tests/")
 	parser.add_argument('-gp','--gen-pdf', help='Generate PDFs',
-		type=boolean_value, default=True)
+		type=boolean_value, default=False)
 	parser.add_argument('-p','--prefix', help="Test filename prefix",
 		default="test")
 	parser.add_argument('-t','--template', help="Text template to use",
