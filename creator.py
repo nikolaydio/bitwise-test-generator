@@ -1,20 +1,20 @@
 import random
 
 
-def new_hex(bits, diff):
+def new_hex(bits_len, random_bits, diff):
 	acc = 0
-	easy = [0, 15, 10, 13, 7]
-	med = [1, 2, 3, 4, 5 ,6, 8 ,9, 11, 12, 14]
-	for i in range(0, bits / 4):
+	easy = [0, 15, 10, 13]
+	med = [1, 2, 3, 4, 5 ,6, 7, 8 ,9, 11, 12, 14]
+	for i in range(0, random_bits / 4):
 		acc <<= 4
 		r = random.randrange(1, 100)
 		if r <= diff:
 			acc |= med[random.randrange(0, len(med))]
 		else:
 			acc |= easy[random.randrange(0, len(easy))]
-	return number(bits, acc)
-def new_mask(bits, diff):
-	return new_hex(bits, diff)
+	return number(bits_len, acc)
+def new_mask(bits_len, random_bits, diff):
+	return new_hex(bits_len, random_bits, diff)
 def new_shift(bits, diff):
 	return (2 ** bits) * random.randrange(0, diff) / 100 + 1
 
@@ -42,6 +42,15 @@ class number():
 		return self.num
 	def __hex__(self):
 		return hex(self.num)
+	def __cmp__(self, sec):
+		if self.num < int(sec):
+			return -1
+		elif self.num > int(sec):
+			return 1
+		else:
+			return 0
+	def __ne__(self, sec):
+		return self.num != sec
 	def get_full_bits(self, bits):
 		if bits == 16:
 			return 2 ** 16 - 1
@@ -60,8 +69,8 @@ class Entry():
 
 class OrQuestion(Entry):
 	def __init__(self, diff):
-		self.orig = new_hex(16, diff)
-		self.mask = new_mask(4, diff)
+		self.orig = new_hex(16, 16, diff)
+		self.mask = new_mask(32, 4, diff)
 		self.shift = new_shift(4, diff)
 
 		self.answer = (self.orig | (self.mask << self.shift))
@@ -73,8 +82,8 @@ class OrQuestion(Entry):
 		return s
 class AndQuestion(Entry):
 	def __init__(self, diff):
-		self.orig = new_hex(16, diff)
-		self.mask = new_mask(4, diff)
+		self.orig = new_hex(16, 16, diff)
+		self.mask = new_mask(32, 4, diff)
 		self.shifta = new_shift(4, diff)
 		self.shiftb = new_shift(4, diff)
 
@@ -93,8 +102,8 @@ class AndQuestion(Entry):
 
 class XorQuestion(Entry):
 	def __init__(self, diff):
-		self.orig = new_hex(16, diff)
-		self.mask = new_mask(4, diff)
+		self.orig = new_hex(16, 16, diff)
+		self.mask = new_mask(32, 4, diff)
 		self.shifta = new_shift(4, diff)
 		self.shiftb = new_shift(4, diff)
 
@@ -113,7 +122,7 @@ class XorQuestion(Entry):
 
 class LeftShiftQuestion(Entry):
 	def __init__(self, diff):
-		self.orig = new_hex(16, diff)
+		self.orig = new_hex(16, 16, diff)
 		self.shift = new_shift(4, diff)
 		self.answer = self.orig | (1 << int(self.shift))
 	def format(self):
@@ -124,8 +133,8 @@ class LeftShiftQuestion(Entry):
 
 class LongXorQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(32, diff)
-		self.value2 = new_hex(32, diff)
+		self.value1 = new_hex(32, 32, diff)
+		self.value2 = new_hex(32, 32, diff)
 		self.shift1 = new_shift(4, diff)
 		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
@@ -137,8 +146,8 @@ class LongXorQuestion(Entry):
 		return s
 class XorDecQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(16, diff)
-		self.value2 = new_hex(16, diff)
+		self.value1 = new_hex(16, 16, diff)
+		self.value2 = new_hex(16, 16, diff)
 		self.shift1 = new_shift(4, diff)
 		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) ^ (self.value2 >> self.shift2)
@@ -151,7 +160,7 @@ class XorDecQuestion(Entry):
 
 class IfShiftQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(32, diff)
+		self.value1 = new_hex(32, 32, diff)
 		self.shift1 = new_shift(4, diff)
 
 		if (self.value1 & ( 1 << int(self.shift1) )) != 0:
@@ -166,7 +175,7 @@ class IfShiftQuestion(Entry):
 
 class IfShiftBitQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(32, diff)
+		self.value1 = new_hex(32, 32, diff)
 		self.shift1 = new_shift(4, diff)
 
 		if (self.value1 & self.value1 ^ self.value1 | ( 1 << int(self.shift1) )) != 0:
@@ -176,14 +185,14 @@ class IfShiftBitQuestion(Entry):
 	def format(self):
 		s = "int32_t testValue = " + hex(self.value1)
 		s += "\nint32_t a = 0;"
-		s += "\n if(testValue & testValue & testValue | (1 << " + str(self.shift1) + "))"
+		s += "\n if(testValue & testValue ^ testValue | (1 << " + str(self.shift1) + "))"
 		s += "\na = 1; \nelse\n a = 2;"
 		return s
 
 class OrDecQuestion(Entry):
 	def __init__(self, diff):
-		self.value1 = new_hex(16, diff)
-		self.value2 = new_hex(16, diff)
+		self.value1 = new_hex(16, 12, diff)
+		self.value2 = new_hex(16, 12, diff)
 		self.shift1 = new_shift(4, diff)
 		self.shift2 = new_shift(4, diff)
 		self.answer = (self.value1 << self.shift1) | (self.value2 >> self.shift2)
